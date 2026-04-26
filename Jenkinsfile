@@ -1,14 +1,6 @@
 pipeline {
     agent any
 
-    stages {
-
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/PillaiSathya/cicd-project'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean compile'
