@@ -1,7 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+
     stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/PillaiSathya/cicd-project.git'
+            }
+        }
 
         stage('Build') {
             steps {
@@ -18,29 +28,22 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    sh '''
+                    sh """
                     mvn sonar:sonar \
-                    -Dsonar.projectKey=cicd-project
-                    '''
+                    -Dsonar.projectKey=cicd-project \
+                    -Dsonar.host.url=http://host.docker.internal:9000 \
+                    -Dsonar.login=$SONAR_TOKEN
+                    """
                 }
             }
         }
 
-// comment this stage temporarily
-//        stage('Quality Gate') {
-//          steps {
-//                timeout(time: 2, unit: 'MINUTES') {
-//                  waitForQualityGate abortPipeline: true
-//              }
-//          }
- //      }
-
-    }
-
-stage('Quality Gate') {
-    steps {
-        timeout(time: 2, unit: 'MINUTES') {
-            waitForQualityGate abortPipeline: true
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
         }
     }
-}}
+}
