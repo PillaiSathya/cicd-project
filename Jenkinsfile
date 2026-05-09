@@ -43,13 +43,13 @@ pipeline {
                 timeout(time: 2, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
-	
             }
-	stage('Deploy') {
+		}	
+		stage('Deploy') {
            steps {
         	sh 'ansible-playbook -i ansible/inventory ansible/deploy.yml'
            }
-       }
-        }
+		}
+        
     }
 }
