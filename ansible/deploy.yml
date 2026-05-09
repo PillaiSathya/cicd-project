@@ -4,17 +4,17 @@
   tasks:
     - name: Create deployment folder
       file:
-        path: /opt/cicd-app
+        path: /tmp/cicd-app
         state: directory
 
     - name: Copy jar file
       copy:
         src: ../target/cicd-project-1.0-SNAPSHOT.jar
-        dest: /opt/cicd-app/app.jar
+        dest: /tmp/cicd-app/app.jar
 
     - name: Stop old application
-      shell: pkill -f 'java -jar /opt/cicd-app/app.jar'
+      shell: pkill -f 'java -jar /tmp/cicd-app/app.jar'
       ignore_errors: yes
 
     - name: Start application
-      shell: nohup java -jar /opt/cicd-app/app.jar > /opt/cicd-app/app.log 2>&1 &
+      shell: nohup java -jar /tmp/cicd-app/app.jar > /tmp/cicd-app/app.log 2>&1 &
