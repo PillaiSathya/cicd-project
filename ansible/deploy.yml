@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Create deployment folder
+      file:
+        path: /opt/cicd-app
+        state: directory
+
+    - name: Copy jar file
+      copy:
+        src: ../target/cicd-project-1.0-SNAPSHOT.jar
+        dest: /opt/cicd-app/app.jar
+
+    - name: Stop old application
+      shell: pkill -f 'java -jar /opt/cicd-app/app.jar'
+      ignore_errors: yes
+
+    - name: Start application
+      shell: nohup java -jar /opt/cicd-app/app.jar > /opt/cicd-app/app.log 2>&1 &
