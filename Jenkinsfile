@@ -9,7 +9,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/PillaiSathya/cicd-project.git'
+                git branch: 'main',
+                url: 'https://github.com/PillaiSathya/cicd-project.git'
             }
         }
 
@@ -44,12 +45,40 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-		}	
-		stage('Deploy') {
-           steps {
-        	sh 'ansible-playbook -i ansible/inventory ansible/deploy.yml'
-           }
-		}
-        
+        }
+
+        stage('Upload to Nexus') {
+            steps {
+                sh """
+                mvn deploy \
+                -DskipTests \
+                -DaltDeploymentRepository=nexus::default::http://host.docker.internal:8081/repository/maven-releases/
+                """
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t cicd-project:latest .'
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                sh '''
+                docker stop cicd-container || true
+                docker rm cicd-container || true
+                docker run -d --name cicd-container -p 8080:8080 cicd-project:latest
+                '''
+            }
+        }
+
+
+        stage('Deploy') {
+            steps {
+				sh 'ansible-playbook -i ansible/inventory ansible/deploy.yml'
+            }
+        }
+
     }
 }
