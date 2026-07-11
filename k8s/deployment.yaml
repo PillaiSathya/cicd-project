@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd-project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cicd-project
+  template:
+    metadata:
+      labels:
+        app: cicd-project
+    spec:
+      containers:
+      - name: cicd-project
+        image: pillaisathya/cicd-project:springboot
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
