@@ -7,12 +7,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                url: 'https://github.com/PillaiSathya/cicd-project.git'
-            }
-        }
 
         stage('Build') {
             steps {
