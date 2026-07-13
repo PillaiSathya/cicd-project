@@ -57,22 +57,3 @@ pipeline {
             }
         }
 
-        stage('Docker Run') {
-            steps {
-                sh '''
-                docker stop cicd-container || true
-                docker rm cicd-container || true
-                docker run -d --name cicd-container -p 8080:8080 cicd-project:latest
-                '''
-            }
-        }
-
-
-        stage('Deploy') {
-            steps {
-				sh 'ansible-playbook -i ansible/inventory ansible/deploy.yml'
-            }
-        }
-
-    }
-}
