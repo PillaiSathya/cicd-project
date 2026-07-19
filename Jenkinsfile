@@ -45,5 +45,35 @@ pipeline {
                 sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
             }
         }
+	
+	stage('Update Kubernetes Manifest') {
+    steps {
+        sh '''
+        sed -i "s|image: pillaisathya/cicd-project:.*|image: pillaisathya/cicd-project:${IMAGE_TAG}|" k8s/deployment.yaml
+        cat k8s/deployment.yaml
+        '''
+    }
+}
+
+	stage('Commit and Push Manifest') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-token',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
+            sh '''
+            git config user.email "jenkins@local"
+            git config user.name "Jenkins"
+
+            git add k8s/deployment.yaml
+            git commit -m "ci: update image tag to ${IMAGE_TAG}" || true
+
+            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/PillaiSathya/cicd-project.git HEAD:k8s-argocd-upgrade
+            '''
+        }
+    }
+}
+
     }
 }
