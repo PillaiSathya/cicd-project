@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cicd-project
-        image: pillaisathya/cicd-project:36
+        image: pillaisathya/cicd-project:37
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
