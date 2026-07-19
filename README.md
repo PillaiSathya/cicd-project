@@ -48,6 +48,7 @@ Docker image is created using the generated application artifact.
 ### 6. Application Deployment
 Ansible playbook deploys and starts the application automatically.
 
+### Testing Poll SCM
 ---
 
 ## Project Structure
