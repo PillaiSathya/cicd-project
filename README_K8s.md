@@ -1,88 +1,102 @@
-# 🚀 End-to-End CI/CD GitOps Pipeline with Jenkins, Docker, Kubernetes & ArgoCD
+# 🚀 End-to-End GitOps CI/CD Pipeline using Jenkins, Docker, Kubernetes & ArgoCD
 
 ## 📖 Project Overview
 
-This project demonstrates an end-to-end CI/CD GitOps pipeline that automates the complete software delivery lifecycle—from source code changes to deployment on Kubernetes.
+This project demonstrates an end-to-end GitOps based CI/CD pipeline for deploying a Spring Boot application using Jenkins, Docker, Kubernetes, and ArgoCD.
 
-The pipeline builds a Java application using Maven, creates and pushes a Docker image to Docker Hub, automatically updates the Kubernetes deployment manifest with the latest image tag, commits the updated manifest back to GitHub, and lets ArgoCD automatically synchronize the Kubernetes cluster.
+The pipeline automates the software delivery process from source code build to Kubernetes deployment while following GitOps principles.
 
-The project was built to gain practical experience with modern DevOps practices including CI/CD automation, GitOps, containerization, Kubernetes deployments, rolling updates, and infrastructure automation.
-
----
-
-# 🛠️ Tech Stack
-
-* Java
-* Maven
-* Git & GitHub
-* Jenkins
-* Docker
-* Docker Hub
-* Kubernetes
-* ArgoCD
-* Linux (Ubuntu WSL)
-* Ansible (initial deployment phase)
+Unlike a traditional deployment pipeline, Jenkins updates the Kubernetes deployment manifest with the latest Docker image tag, commits the change back to GitHub, and ArgoCD automatically synchronizes the Kubernetes cluster.
 
 ---
 
-# 🏗️ Project Architecture
+# 🏗 Architecture
 
-```text
-Developer
-    │
-    │ git push
-    ▼
-GitHub Repository
-    │
-    ▼
-Jenkins Pipeline
-    │
-    ├── Maven Build
-    ├── Unit Testing
-    ├── Docker Build
-    ├── Docker Push
-    ├── Update Kubernetes Manifest
-    └── Commit & Push Manifest
-                │
-                ▼
+![Architecture](screenshots/K8s/arch.png)
+
+
+```
+                Developer
+                    │
+         Git Commit & Push
+                    │
+                    ▼
           GitHub Repository
-                │
-                ▼
-         ArgoCD Auto Sync
-                │
-                ▼
-       Kubernetes Cluster
-                │
-                ▼
-      Rolling Update Deployment
+                    │
+          (Manual Build Trigger)
+                    │
+                    ▼
+             Jenkins Pipeline
+                    │
+    ┌───────────────┼──────────────────────┐
+    ▼               ▼                      ▼
+Checkout        Maven Build           Maven Test
+                    │
+                    ▼
+             Docker Build
+                    │
+                    ▼
+            Push to Docker Hub
+                    │
+                    ▼
+      Update deployment.yaml
+                    │
+                    ▼
+      Commit Manifest to GitHub
+                    │
+                    ▼
+             ArgoCD watches Git
+                    │
+                    ▼
+      Kubernetes Rolling Update
+                    │
+                    ▼
+     Spring Boot Application
 ```
 
 ---
 
-# ✨ Features
+# 🚀 Features
 
-* Automated Maven Build
-* Automated Unit Testing
-* Docker Image Creation
-* Docker Image Push to Docker Hub
-* Automatic Kubernetes Manifest Update
-* GitOps Workflow using ArgoCD
-* Automatic Kubernetes Deployment
-* Rolling Updates with Zero Downtime
-* Jenkins Credential Management
-* GitHub Integration
-* Docker Hub Integration
+- Complete CI/CD pipeline using Jenkins
+- Spring Boot application build using Maven
+- Unit testing using Maven
+- Docker image creation
+- Docker Hub image publishing
+- Kubernetes Deployment & Service manifests
+- GitOps workflow using ArgoCD
+- Automatic Kubernetes manifest update
+- Automatic manifest commit to GitHub
+- Rolling updates using Kubernetes Deployments
+- Three application replicas running inside Kubernetes
+- Image versioning using Jenkins BUILD_NUMBER
 
 ---
 
-# 📁 Project Structure
+# 🛠 Tech Stack
+
+| Category | Technologies |
+|----------|--------------|
+| Language | Java |
+| Framework | Spring Boot |
+| Build Tool | Maven |
+| CI | Jenkins |
+| Container | Docker |
+| Registry | Docker Hub |
+| Orchestration | Kubernetes |
+| GitOps | ArgoCD |
+| Version Control | Git & GitHub |
+| OS | Ubuntu WSL |
+
+---
+
+# 📂 Project Structure
 
 ```text
 .
 ├── Dockerfile
 ├── Jenkinsfile
 ├── README.md
-├── pom.xml
 ├── ansible/
 ├── k8s/
 │   ├── deployment.yaml
@@ -90,126 +104,184 @@ Jenkins Pipeline
 ├── screenshots/
 │   ├── cicd_main/
 │   └── K8s/
-└── src/
-    ├── main/
-    └── test/
+├── src/
+└── pom.xml
 ```
 
 ---
 
-# ⚙️ Jenkins Pipeline Stages
+# ⚙️ Prerequisites
 
-### 1. Source Checkout
+- Java 17
+- Maven
+- Docker
+- Kubernetes Cluster
+- Jenkins
+- Git
+- GitHub
+- Docker Hub Account
+- ArgoCD
 
-Fetches the latest source code from GitHub.
+---
 
-### 2. Maven Build
+# 🔄 CI/CD Workflow
 
-Compiles the Java application and generates the executable JAR.
+### Step 1
 
-### 3. Unit Testing
+Developer commits code to GitHub.
 
-Executes Maven test cases to validate the application.
+### Step 2
 
-### 4. Docker Build
+Jenkins Pipeline is manually triggered using **Build Now**.
 
-Builds a Docker image from the generated application.
+### Step 3
 
-### 5. Docker Login
+Jenkins checks out the latest source code.
 
-Authenticates Jenkins with Docker Hub using stored credentials.
+### Step 4
 
-### 6. Docker Push
+Maven builds the Spring Boot application.
 
-Pushes the newly built image to Docker Hub using the Jenkins build number as the image tag.
+### Step 5
 
-### 7. Update Kubernetes Manifest
+Unit tests are executed.
 
-Automatically updates the image version inside `k8s/deployment.yaml`.
+### Step 6
 
-Example:
+Docker image is created.
 
-```yaml
-image: pillaisathya/cicd-project:32
+### Step 7
+
+Docker image is pushed to Docker Hub.
+
+### Step 8
+
+Jenkins updates the image tag inside:
+
+```
+k8s/deployment.yaml
 ```
 
-### 8. Commit & Push Manifest
+### Step 9
 
-Commits the updated Kubernetes manifest and pushes it back to GitHub.
+Updated Kubernetes manifest is committed and pushed back to GitHub.
 
----
+### Step 10
 
-# ☸️ GitOps Workflow
+ArgoCD detects the Git change.
 
-ArgoCD continuously monitors the GitHub repository.
+### Step 11
 
-Whenever Jenkins updates the Kubernetes manifest:
+ArgoCD synchronizes the Kubernetes cluster.
 
-* ArgoCD detects the Git commit.
-* Synchronizes the cluster automatically.
-* Deploys the latest Docker image.
-* Performs a Kubernetes Rolling Update.
+![ArgoCD](screenshots/K8s/img15_final_out_argocd.png)
 
-No manual `kubectl apply` command is required after the initial setup.
+### Step 12
 
----
+Kubernetes performs a Rolling Update.
 
-# 🔄 Kubernetes Rolling Update
+![Rolling Update](screenshots/K8s/img7_Rolling_update.png)
 
-The deployment strategy ensures zero downtime.
+### Step 13
 
-During each deployment:
+Latest version of the Spring Boot application becomes available.
 
-* New Pods are created.
-* Health is verified.
-* Old Pods are terminated only after the new Pods become ready.
+![Latest version](screenshots/K8s/img15_final_out.png)
 
 ---
 
-# 📷 Project Screenshots
+# ☸️ Kubernetes Deployment
 
-The repository includes screenshots demonstrating:
+Deployment includes:
 
-* Maven Build
-* Docker Image Push
-* Jenkins Pipeline Success
-* Kubernetes Deployment
-* Kubernetes Service
-* ArgoCD Installation
-* ArgoCD Application
-* Rolling Update
-* GitOps Deployment
-* Final Working Application
+- 3 Spring Boot replicas
+- Rolling Updates
+- Self-healing
+- Declarative configuration
+- Image version updates through GitOps
 
 ---
 
-# 🎯 Key Learnings
+# 🔁 GitOps Workflow
 
-During this project I learned:
+Instead of deploying directly to Kubernetes, Jenkins updates the Kubernetes manifest stored in Git.
 
-* Building CI/CD pipelines using Jenkins
-* Docker image creation and publishing
-* Kubernetes Deployments and Services
-* ReplicaSets and Rolling Updates
-* GitOps concepts using ArgoCD
-* Jenkins Credentials Management
-* GitHub automation
-* Kubernetes manifest management
-* Troubleshooting Jenkins, Docker and Kubernetes issues
-* Resolving recursive CI trigger loops caused by Jenkins committing back to the same repository
+ArgoCD continuously watches the Git repository.
+
+Whenever the deployment manifest changes, ArgoCD automatically synchronizes the Kubernetes cluster to match the desired state stored in Git.
+
+This follows the GitOps deployment model.
+
+---
+
+# 📸 Project Screenshots
+
+## Jenkins Pipeline
+
+- Maven Build
+- Successful Pipeline
+- Docker Image Build
+
+## Docker Hub
+
+- Docker Image Push
+
+## Kubernetes
+
+- Deployment
+- Service
+- Rolling Update
+- Running Pods
+
+## ArgoCD
+
+- Application Synchronization
+- Automatic Deployment
+
+---
+
+# ⚠️ Challenges Faced
+
+During this project, several real-world issues were encountered and resolved.
+
+- Configured Docker inside Jenkins container.
+- Installed Maven inside Jenkins.
+- Resolved Docker permission denied issues.
+- Configured GitHub Personal Access Token.
+- Automated Kubernetes manifest updates.
+- Implemented GitOps workflow using ArgoCD.
+- Understood and resolved SCM polling infinite build loop caused by Jenkins committing back to the same repository.
+- Verified Kubernetes rolling updates using image version changes.
+
+---
+
+# 📚 Key Learnings
+
+Through this project I learned:
+
+- Jenkins Pipeline development
+- Docker image versioning
+- Kubernetes Deployments and Services
+- Rolling Updates
+- GitOps principles
+- ArgoCD synchronization
+- GitHub authentication using Personal Access Tokens
+- CI/CD troubleshooting
+- Debugging Jenkins pipelines
+- Production-style deployment workflow
 
 ---
 
 # 🚀 Future Improvements
 
-* GitHub Webhooks using ngrok
-* Helm Charts
-* Kubernetes Ingress
-* Prometheus Monitoring
-* Grafana Dashboards
-* Deploy to AWS EKS
-* SonarQube Quality Gates
-* Nexus Artifact Repository Integration
+- GitHub Webhook integration
+- Helm Charts
+- Separate GitOps manifests repository
+- Jenkins Shared Libraries
+- Prometheus & Grafana monitoring
+- Slack/Email notifications
+- Kubernetes Ingress
+- Production-ready Kubernetes cluster
 
 ---
 
@@ -217,11 +289,7 @@ During this project I learned:
 
 **Pillai Sathya Sudalai**
 
-DevOps Engineer Aspirant
+DevOps | Cloud | Linux | Kubernetes | Docker | Jenkins
 
-* GitHub: https://github.com/PillaiSathya
-
----
-
-## ⭐ If you found this project useful, consider giving it a star.
-
+GitHub:
+https://github.com/PillaiSathya
