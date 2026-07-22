@@ -212,6 +212,9 @@ Whenever the deployment manifest changes, ArgoCD automatically synchronizes the 
 
 This follows the GitOps deployment model.
 
+Jenkins never deploys directly to Kubernetes. Instead, Git becomes the single source of truth, and ArgoCD continuously reconciles the cluster with the desired state stored in Git.
+
+This sounds very professional and shows you understand GitOps, not just the commands.
 ---
 
 # 📸 Project Screenshots
@@ -284,6 +287,18 @@ Through this project I learned:
 - Production-ready Kubernetes cluster
 
 ---
+
+## Project Highlights
+
+- CI/CD Pipeline using Jenkins
+- Spring Boot Application
+- Docker Image Versioning
+- Kubernetes Deployment (3 Replicas)
+- GitOps with ArgoCD
+- Rolling Updates
+- Docker Hub Integration
+- GitHub PAT Authentication
+- Automated Manifest Updates
 
 # 👨‍💻 Author
 
