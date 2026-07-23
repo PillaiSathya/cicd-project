@@ -214,7 +214,6 @@ This follows the GitOps deployment model.
 
 Jenkins never deploys directly to Kubernetes. Instead, Git becomes the single source of truth, and ArgoCD continuously reconciles the cluster with the desired state stored in Git.
 
-This sounds very professional and shows you understand GitOps, not just the commands.
 ---
 
 # 📸 Project Screenshots
